@@ -24,7 +24,6 @@ typedef unsigned char BYTE;
  */
 #define PACK_TRAN_HEAD "PACK_TRAN"
 #define PACK_MESS_HEAD "PACK_MESS"
-#define PACK_RANK_HEAD "PACK_RANK"
 #define PACK_INIT_HEAD "PACK_INIT_POS"
 #define PACK_END "END"
 
@@ -32,7 +31,6 @@ enum Packinfo
 {
 	PACK_CLOSE,
 	PACK_TRANS,
-	PACK_RANK,
 	PACK_INIT
 };
 
@@ -40,6 +38,7 @@ enum Packinfo
 //const int yes = 1;
 struct IP_Pack
 {
+	IP_Pack(){}
 	IP_Pack( string pIP, string pport) { IP = pIP; port = pport; }
 	string IP;
 	string port;

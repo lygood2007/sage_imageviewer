@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "server.h"
+#include "server_scene.h"
 #include "types.h"
 
 //int rank;
@@ -28,6 +29,7 @@
 
 char* port = "9000";
 Server server;
+ServerScene scene;
 
 int winHeight = 500;
 int winWidth = 500;

@@ -1,0 +1,8 @@
+/*
+  server_scene.h
+  This is the header file of the class ServerScene.
+  This is only an imageviewer, the scene is just one texture
+  Project:imageViewer
+  Name: Yan Li
+  Date: 04/21/2013
+ */

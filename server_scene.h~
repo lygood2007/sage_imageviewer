@@ -1,0 +1,8 @@
+/*
+  server.h
+  This is the header file of the class Server.
+  Network is responsible for all the issues about network configuration in Server
+  Project:imageViewer
+  Name: Yan Li
+  Date: 04/20/2013
+ */

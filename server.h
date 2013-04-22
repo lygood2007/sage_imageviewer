@@ -27,12 +27,14 @@
 #include <signal.h>
 #include <assert.h>
 #include "types.h"
+#include "server_scene.h"
 #define BACKLOG 10 // Max 10 connection
 
 
 class Server
 {
 public:
+	friend ServerScene;
 	Server();
 	Server( char* portNumber );
 	~Server();
@@ -64,6 +66,9 @@ private:
 	int m_dimY;
 	int m_viewerWidth;
 	int m_viewerHeight;
+	int m_origX;
+	int m_origY;
+
 	float m_transform[TRANSFORM_MAT_LENGTH];
 };
 

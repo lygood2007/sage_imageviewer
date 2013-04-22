@@ -198,7 +198,7 @@ void Server::listenClient()
 			{
 				fflush(stdout);
 				//Test
-				printf("I got %s:\n",m_recvData);
+				//printf("I got %s:\n",m_recvData);
 				messageParser();
 				//string_parser( recv_data );
 				// after handling message, we clear the buffer
@@ -253,14 +253,8 @@ void Server::messageParser()
 				len = mSize - strlen(PACK_INIT_HEAD) - strlen(PACK_END);
 				subStr = message.substr(strlen(PACK_INIT_HEAD),len);
 				ss<<subStr;
-				ss>>m_dimX>>m_dimY>>m_viewerWidth>>m_viewerHeight;
-			}
-			else if ( texts[0] == PACK_RANK_HEAD )
-			{
-				len = mSize - strlen(PACK_RANK_HEAD) - strlen(PACK_END);
-				subStr = message.substr(strlen(PACK_RANK_HEAD),len);
-				ss<<subStr;
-				ss>>m_rank;
+				ss>>m_rank>>m_dimX>>m_dimY>>m_viewerWidth>>m_viewerHeight>>m_origX>>m_origY;
+				cout<<"I got: "<<m_rank<<" "<<m_dimX<<" "<<m_dimY<<" "<<m_viewerWidth<<" "<<m_viewerHeight<<" "<<m_origX<<" "<<m_origY<<endl;
 			}
 			else if( texts[0] == PACK_TRAN_HEAD )
 			{
@@ -268,14 +262,16 @@ void Server::messageParser()
 				subStr = message.substr(strlen(PACK_TRAN_HEAD),len);
 				ss<<subStr;
 				ss>>m_transform[0]>>m_transform[1]>>m_transform[2]>>m_transform[3]>>m_transform[4];		
+				cout<<"I got: "<<m_transform[0]<<" "<<m_transform[1]<<" "<<m_transform[2]<<" "<<m_transform[3]<<" "<<m_transform[4]<<endl;
 			}
 			else if( texts[0] == PACK_MESS_HEAD )
 			{
-				len = mSize - strlen(PACK_MESS_HEAD) - strlen(PACK_END);
+				len = mSize - strlen(PACK_MESS_HEAD) - strlen(PACK_END)-2;
 				subStr = message.substr(strlen(PACK_MESS_HEAD)+1,len);
+				cout<<"I got:"<<subStr<<endl;
 				if( subStr == "CLOSE" )
 				{
-					printf("Server is going to close");
+					printf("Server is going to close\n");
 					close(m_listener);
 					exit(0);
 				}

@@ -49,7 +49,8 @@ public:
 	inline int getServNum() { return m_servNum; }
 	void encapsulatePack( Packinfo info, float* transform = NULL, int* init = NULL, int rank = -1 );
 	void sendData();
-	void sendServerInitData( const int dimX, const int dimY, const int serverWidth, const int serverHeight );
+	void sendServerInitData( const int dimX, const int dimY, const int serverWidth, const int serverHeight, int origX, int origY );
+
 private:
 
 	void initOneServer( int *sockfd, char* ip_addr, char* port_number, int index );
