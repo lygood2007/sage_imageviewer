@@ -7,8 +7,8 @@
   Date: 04/20/2013
  */
 
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef SERVER_H
+#define SERVER_H
 
 /*
   Server includes
@@ -40,6 +40,7 @@ public:
 	//static void* getInAddr( struct sockaddr *sa );
 	void initNetwork();
 	void listenClient();
+	inline void clearRecvData(){ memset(m_recvData,0,MAX_DATA_LENGTH*sizeof( char ) ); }
 
 private:
 	int m_fdmax;
@@ -55,4 +56,5 @@ private:
 	char* m_portNumber;
 
 };
+
 #endif

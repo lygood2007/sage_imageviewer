@@ -1,0 +1,32 @@
+/*
+  scene_client.h
+  This is the source file of the class ClientScene.
+  Project:imageViewer
+  Name: Yan Li
+  Date: 04/20/2013
+ */
+
+#include "scene_client.h"
+
+ClientScene::ClientScene()
+{
+	m_texturePixels = 0;
+}
+
+ClientScene:~ClientScene()
+{
+	if( m_texturePixels )
+	{
+		free(m_texturePixels);
+		m_texturePixels = NULL;
+	}
+	glDeleteTextures(1,&m_texture[0]);
+}
+
+void ClientScene::initTexture()
+{
+}
+
+void ClientScene::releaseTexture()
+{
+}

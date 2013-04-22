@@ -32,6 +32,19 @@
 using std::vector;
 using std::string;
 
+/*
+  Package header
+ */
+#define PACK_TRAN_HEAD "PACK_TRAN:"
+#define PACK_MESS_HEAD "PACK_MESS:"
+#define PACK_END "END"
+enum Packinfo
+{
+	PACK_CLOSE,
+	PACK_TRANS,
+	PACK_INITPOS
+};
+
 class Client
 {
 public:
@@ -39,9 +52,12 @@ public:
 	~Client();
 	void pushServer( string ipAddr, string portNumber );
 	void initNetwork();
+	void closeNetwork();
 	inline void clearSendData() { memset(m_sendData, 0, MAX_DATA_LENGTH*sizeof(char)); }
 	inline char* getSendData() { return m_sendData; }
 	inline int getServNum() { return m_servNum; }
+	void encapsulatePack( Packinfo info, float* transform = NULL, int* pos = NULL );
+	void sendData();
 
 private:
 
@@ -55,4 +71,5 @@ private:
 	vector<string> m_portNumber;
 	vector<bool> m_connected;
 	char m_sendData[MAX_DATA_LENGTH];
+	bool m_toClose;
 };

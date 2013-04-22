@@ -15,6 +15,7 @@
 
 typedef unsigned char BYTE;
 #define MAX_DATA_LENGTH 1024
+#define TRANSFORM_MAT_LENGTH 5
 //#define 
 //const int yes = 1;
 

@@ -11,6 +11,7 @@
 Client::Client()
 {
 	m_servNum = 0;
+	m_toClose;
 	clearSendData();
 }
 
@@ -48,6 +49,60 @@ void Client::initNetwork()
 	{
 		cout<<m_servSocket[i]<<endl;
 		cout<<m_connected[i]<<endl;
+	}
+}
+
+void Client::closeNetwork()
+{
+	for( unsigned int i = 0; i < m_servNum; i++ )
+	{
+		if( m_connected[i] )
+			close(m_servSocket[i]);
+	}
+}
+
+void Client::encapsulatePack( Packinfo info, float* transform )
+{
+	clearSendData();
+	switch (info)
+	{
+	case PACK_CLOSE:
+	{
+		sprintf(m_sendData,PACK_MESS_HEAD "CLOSE" PACK_END );
+		m_toClose = true;
+		break;
+	}
+	case PACK_TRANS:
+	{
+		if( transform == NULL )
+		{
+			fprintf(stdout, "Invalid call.\n" );
+			exit(1);
+		}
+		sprintf(m_sendData,PACK_TRAN_HEAD "%f %f %f %f %f " PACK_END, transform[0], transform[1],transform[2],
+				transform[3],transform[4]);
+		break;
+	}
+	default:
+	{
+		fprintf(stdout, "Invalid call.\n" );
+		exit(1);
+	}
+	}
+}
+
+void Client::sendData()
+{
+	for( unsigned int i = 0; i < m_servNum; i++ )
+	{
+		send( m_servSocket[i], m_sendData, strlen(m_sendData),0 );
+	}
+	if( m_toClose )
+	{
+		for( unsigned int i = 0; i < m_servNum; i++ )
+		{
+			close( m_servSocket[i] );
+		}
 	}
 }
 

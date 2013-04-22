@@ -15,6 +15,7 @@ Server::Server()
 	m_client = -1;
 	m_listener = -1;
 	m_connected = false;
+	clearRecvData();
 }
 
 Server::Server( char* portNumber )
@@ -23,6 +24,7 @@ Server::Server( char* portNumber )
 	m_listener = -1;
 	m_connected = false;
 	m_portNumber = portNumber; 
+	clearRecvData();
 }
 Server::~Server()
 {
@@ -96,15 +98,15 @@ void Server::initNetwork()
   
 	// reap all dead processes (copied from other's code, 
 	// don't know why)
-/*	m_sa.sa_handler = sigchld_handler;
+	m_sa.sa_handler = sigchld_handler;
 	sigemptyset(&m_sa.sa_mask);
 	m_sa.sa_flags = SA_RESTART;
-	if( sigaction(SIGCHLD, &sa, NULL) == -1)
+	if( sigaction(SIGCHLD, &m_sa, NULL) == -1)
     {
 		perror("Sigaction");
 		exit(1);
     }
-*/
+
 	printf("Server: waiting for connections...\n");
 	fflush(stdout);
 }
@@ -148,9 +150,6 @@ void Server::listenClient()
 	else
 	{
 		assert( m_client > 0 );
-		{
-			printf("Client socket is not initialized correcly\n");
-		}
 		//assert( client > 0 && "Client socket is not initialized correcly" );
 		if( FD_ISSET( m_client,&m_readFds) )
 		{
@@ -175,9 +174,12 @@ void Server::listenClient()
 			else
 			{
 				fflush(stdout);
+				//Test
+				printf("I got %s:\n",m_recvData);
 				//string_parser( recv_data );
 				// after handling message, we clear the buffer
-				memset(m_recvData, 0, MAX_DATA_LENGTH*sizeof(char));
+				//memset(m_recvData, 0, MAX_DATA_LENGTH*sizeof(char));
+				clearRecvData();
 			}
 		}
 	}

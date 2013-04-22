@@ -1,0 +1,60 @@
+/*
+  The head file for image loader
+ */
+
+#ifndef IMAGE_LOADER_H
+#define IMAGE_LOADER_H
+
+#include "global.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <string>
+#include <ImageMagick/wand/magick-wand.h>
+using namespace std;
+//typedef unsigned char BYTE;
+#define ThrowWandException(wand)		\
+  {						\
+    char					\
+      *description;				\
+						\
+    ExceptionType				\
+      severity;					\
+						    \
+    description=MagickGetException(wand,&severity);			\
+    (void) fprintf(stderr,"%s %s %ld %s\n",GetMagickModule(),description); \
+    description=(char *) MagickRelinquishMemory(description);		\
+    exit(-1);								\
+  }
+
+void getPixels(string fileName, BYTE **rgba, int &width,
+	       int &height)
+{
+    // use ImageMagick to read all other formats
+	  MagickBooleanType status;
+    MagickWand *wand;
+
+    // read file
+    wand=NewMagickWand();
+    status=MagickReadImage(wand, fileName.data());
+    if (status == MagickFalse)
+      ThrowWandException(wand);
+
+    // get the image size
+    width = MagickGetImageWidth(wand);
+    height = MagickGetImageHeight(wand);
+
+    // get the pixels
+    *rgba = (BYTE*) malloc(width*height*3);
+    memset(*rgba, 0, width*height*3);
+#if MagickLibVersion >= 0x645
+    MagickExportImagePixels(wand, 0, 0, width, height, "RGB", CharPixel, *rgba);
+#else
+    MagickGetImagePixels(wand, 0, 0, width, height, "RGB", CharPixel, *rgba);
+#endif
+
+
+	DestroyMagickWand(wand);
+}
+
+#endif
