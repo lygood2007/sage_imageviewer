@@ -34,10 +34,22 @@ int winWidth = 500;
 int winPosX = 0;
 int winPosY = 0;
 
-void init()
+int rank = -1;
+int dimX = -1;
+int dimY = -1;
+int viewWidth = -1;
+int viewHeight = -1;
+
+void initNet()
 {
 	server = Server(port);
 	server.initNetwork();
+	while(1)
+	{
+		server.listenClient();
+		if( server.isInitialized() )
+			break;
+	}
 }
 
 void display()
@@ -72,7 +84,7 @@ int main( int argc, char** argv )
 	{
 		port = argv[1];
 	}
-	
+	initNet();
 	glutInit( &argc, argv );
 	// Use double buffer
 	glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB );
@@ -86,7 +98,7 @@ int main( int argc, char** argv )
 	glutReshapeFunc(reshape);
 //	glutKeyboardFunc(keyhandler);
 	glutIdleFunc(serverListen);
-	init();
+//	init();
 	glutMainLoop();
 	return 0;
 }

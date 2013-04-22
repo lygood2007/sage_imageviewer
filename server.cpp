@@ -7,7 +7,15 @@
  */
 #include "server.h"
 #include "funcs.h"
+#include <vector>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <boost/foreach.hpp>
+#include <boost/tokenizer.hpp>
 
+using namespace std;
+using namespace boost;
 int yes = 1;
 
 Server::Server()
@@ -15,6 +23,13 @@ Server::Server()
 	m_client = -1;
 	m_listener = -1;
 	m_connected = false;
+	m_rank = -1;
+	m_dimX = -1;
+	m_dimY = -1;
+	m_viewerWidth = -1;
+	m_viewerHeight = -1;
+	memset(m_transform, 0, sizeof(m_transform) );
+	memset( m_clientIP, 0, sizeof(m_clientIP) );
 	clearRecvData();
 }
 
@@ -23,12 +38,20 @@ Server::Server( char* portNumber )
 	m_client = -1;
 	m_listener = -1;
 	m_connected = false;
-	m_portNumber = portNumber; 
+	m_portNumber = portNumber;
+	m_rank = -1;
+	m_dimX = -1;
+	m_dimY = -1;
+	m_viewerWidth = -1;
+	m_viewerHeight = -1;
+	memset(m_transform, 0, sizeof(m_transform) );
+	memset( m_clientIP, 0, sizeof(m_clientIP) );
 	clearRecvData();
 }
+
 Server::~Server()
 {
-
+	close(m_listener);
 }
 
 void Server::initNetwork()
@@ -176,6 +199,7 @@ void Server::listenClient()
 				fflush(stdout);
 				//Test
 				printf("I got %s:\n",m_recvData);
+				messageParser();
 				//string_parser( recv_data );
 				// after handling message, we clear the buffer
 				//memset(m_recvData, 0, MAX_DATA_LENGTH*sizeof(char));
@@ -183,5 +207,79 @@ void Server::listenClient()
 			}
 		}
 	}
-
 } 
+
+bool Server::isInitialized()
+{
+	if( m_dimX > 0 && m_dimY > 0 && m_rank > 0 &&m_viewerWidth > 0 && m_viewerHeight > 0 )
+		return true;
+}
+
+void Server::messageParser()
+{
+	// Convert to C++ form
+	string message = m_recvData;
+	int mSize = message.size();
+	if( mSize == 0 )
+	{
+		//Empty
+		return;
+	}
+	else
+	{
+		char_separator<char> sep(" ");
+		tokenizer< char_separator<char> > tokens(message, sep);
+		vector<string> texts;
+		BOOST_FOREACH (const string& t, tokens) {
+			texts.push_back(t);
+		}
+		if( texts.size() < 3 )// invalid
+		{
+			printf("Invalid Package, missing information!\n");
+			return;
+		}
+		if( texts[texts.size()-1] != PACK_END )
+		{
+			printf("Invalid Package, no end flag!\n");
+			return;
+		}
+		else
+		{
+			string subStr;
+			stringstream ss;
+			int len;
+			if( texts[0] == PACK_INIT_HEAD)
+			{
+				len = mSize - strlen(PACK_INIT_HEAD) - strlen(PACK_END);
+				subStr = message.substr(strlen(PACK_INIT_HEAD),len);
+				ss<<subStr;
+				ss>>m_dimX>>m_dimY>>m_viewerWidth>>m_viewerHeight;
+			}
+			else if ( texts[0] == PACK_RANK_HEAD )
+			{
+				len = mSize - strlen(PACK_RANK_HEAD) - strlen(PACK_END);
+				subStr = message.substr(strlen(PACK_RANK_HEAD),len);
+				ss<<subStr;
+				ss>>m_rank;
+			}
+			else if( texts[0] == PACK_TRAN_HEAD )
+			{
+				len = mSize - strlen(PACK_TRAN_HEAD) - strlen(PACK_END);
+				subStr = message.substr(strlen(PACK_TRAN_HEAD),len);
+				ss<<subStr;
+				ss>>m_transform[0]>>m_transform[1]>>m_transform[2]>>m_transform[3]>>m_transform[4];		
+			}
+			else if( texts[0] == PACK_MESS_HEAD )
+			{
+				len = mSize - strlen(PACK_MESS_HEAD) - strlen(PACK_END);
+				subStr = message.substr(strlen(PACK_MESS_HEAD)+1,len);
+				if( subStr == "CLOSE" )
+				{
+					printf("Server is going to close");
+					close(m_listener);
+					exit(0);
+				}
+			}
+		}
+	}
+}

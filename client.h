@@ -35,15 +35,6 @@ using std::string;
 /*
   Package header
  */
-#define PACK_TRAN_HEAD "PACK_TRAN:"
-#define PACK_MESS_HEAD "PACK_MESS:"
-#define PACK_END "END"
-enum Packinfo
-{
-	PACK_CLOSE,
-	PACK_TRANS,
-	PACK_INITPOS
-};
 
 class Client
 {
@@ -56,9 +47,9 @@ public:
 	inline void clearSendData() { memset(m_sendData, 0, MAX_DATA_LENGTH*sizeof(char)); }
 	inline char* getSendData() { return m_sendData; }
 	inline int getServNum() { return m_servNum; }
-	void encapsulatePack( Packinfo info, float* transform = NULL, int* pos = NULL );
+	void encapsulatePack( Packinfo info, float* transform = NULL, int* init = NULL, int rank = -1 );
 	void sendData();
-
+	void sendServerInitData( const int dimX, const int dimY, const int serverWidth, const int serverHeight );
 private:
 
 	void initOneServer( int *sockfd, char* ip_addr, char* port_number, int index );

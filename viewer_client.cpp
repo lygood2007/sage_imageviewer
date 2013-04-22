@@ -16,6 +16,9 @@
 #include <stdlib.h>
 #include "client.h"
 #include "client_scene.h"
+#include <vector>
+
+using std::vector;
 //#define PORT "9000"
 
 const int winPosX = 0;
@@ -26,10 +29,36 @@ int winHeight = 500;
 Client client;
 ClientScene scene;
 
+/* Should load from config file then*/
+int viewerServerWidth;
+int viewerServerHeight;
+int dimX;
+int dimY;
+
+vector<IP_Pack> nodes;
+
+/**
+   Change it to date driven method
+ **/
+void loadConfig()
+{
+	nodes.push_back( IP_Pack( "127.0.0.1","9000") );
+	//nodes.push_back( IP_Pack( "127.0.0.1","9001") );
+	dimX = 1;
+	dimY = 1;
+	viewerServerWidth = 1000;
+	viewerServerHeight = 1000;
+}
+
 void init()
 {
-	client.pushServer("127.0.0.1","9000");
+	for( int i = 0; i < nodes.size(); i++ )
+	{
+		client.pushServer( nodes[i].IP, nodes[i].port );
+	}
+
 	client.initNetwork();
+	client.sendServerInitData( dimX, dimY, viewerServerWidth, viewerServerHeight );
 	scene.initTexture();
 }
 
@@ -174,7 +203,7 @@ int main( int argc, char** argv )
 	glutInitWindowSize( winWidth, winHeight );
 	glutInitWindowPosition( winPosX, winPosY );
 	glutCreateWindow( argv[0] );
-
+	loadConfig();
 	init();
 
 	glutDisplayFunc(display);

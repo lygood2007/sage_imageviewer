@@ -61,14 +61,14 @@ void Client::closeNetwork()
 	}
 }
 
-void Client::encapsulatePack( Packinfo info, float* transform )
+void Client::encapsulatePack( Packinfo info, float* transform, int* init, int rank )
 {
 	clearSendData();
 	switch (info)
 	{
 	case PACK_CLOSE:
 	{
-		sprintf(m_sendData,PACK_MESS_HEAD "CLOSE" PACK_END );
+		sprintf(m_sendData,PACK_MESS_HEAD " CLOSE" PACK_END );
 		m_toClose = true;
 		break;
 	}
@@ -81,6 +81,26 @@ void Client::encapsulatePack( Packinfo info, float* transform )
 		}
 		sprintf(m_sendData,PACK_TRAN_HEAD "%f %f %f %f %f " PACK_END, transform[0], transform[1],transform[2],
 				transform[3],transform[4]);
+		break;
+	}
+	case PACK_INIT:
+	{
+		if( init == NULL )
+		{
+			fprintf(stdout, "Invalid call.\n" );
+			exit(1);
+		}
+		sprintf( m_sendData, PACK_INIT_HEAD " %d %d %d %d " PACK_END, init[0], init[1], init[2], init[3] );
+		break;
+	}
+	case PACK_RANK:
+	{
+		if( rank == -1 )
+		{
+			fprintf(stdout, "Invalid call.\n" );
+			exit(1);
+		}
+		sprintf( m_sendData, PACK_RANK_HEAD " %d " PACK_END, rank );
 		break;
 	}
 	default:
@@ -102,6 +122,29 @@ void Client::sendData()
 		for( unsigned int i = 0; i < m_servNum; i++ )
 		{
 			close( m_servSocket[i] );
+		}
+	}
+}
+
+void Client::sendServerInitData( const int dimX, const int dimY, const int serverWidth, const int serverHeight)
+{
+	for( int i = 0; i < dimY; i++ )
+	{
+		for( int j =0; j < dimX; j++ )
+		{
+			const int rank = i*dimX + j;
+			if( (unsigned)rank >= m_servNum )
+			{
+				break;
+			}
+			encapsulatePack(PACK_RANK, NULL, NULL, rank );
+			send( m_servSocket[rank], m_sendData, strlen(m_sendData), 0 );
+			int count = 2000;
+			while( count-- > 0);
+			int tmp[4];
+			tmp[0] = dimX, tmp[1] = dimY, tmp[2] = serverWidth, tmp[3] = serverHeight;
+			encapsulatePack(PACK_INIT, NULL, tmp );
+			send( m_servSocket[rank], m_sendData, strlen(m_sendData), 0 );
 		}
 	}
 }

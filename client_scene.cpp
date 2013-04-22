@@ -63,7 +63,7 @@ void ClientScene::draw( const float origX, const float origY, const float width,
 	glTranslatef(m_transform[0],m_transform[1],0);
 	glScalef(m_transform[3],m_transform[4],0);
 	glRotatef(m_transform[2],0,0,1);
-	drawQuadTex(m_texture[0],origX,origY,width,height);
+	drawQuadTex(m_texture[0],origX,origY,m_texWidth/4,m_texHeight/4);
 	glPopMatrix();
 	// In double buffer mode
 }

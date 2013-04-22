@@ -26,7 +26,6 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <assert.h>
-
 #include "types.h"
 #define BACKLOG 10 // Max 10 connection
 
@@ -40,9 +39,14 @@ public:
 	//static void* getInAddr( struct sockaddr *sa );
 	void initNetwork();
 	void listenClient();
+	bool isInitialized(); 
 	inline void clearRecvData(){ memset(m_recvData,0,MAX_DATA_LENGTH*sizeof( char ) ); }
 
 private:
+	void messageParser();
+
+private:
+
 	int m_fdmax;
 	int m_client;
 	int m_listener;
@@ -55,6 +59,12 @@ private:
 	fd_set m_readFds;
 	char* m_portNumber;
 
+	int m_rank; 
+	int m_dimX;
+	int m_dimY;
+	int m_viewerWidth;
+	int m_viewerHeight;
+	float m_transform[TRANSFORM_MAT_LENGTH];
 };
 
 #endif
