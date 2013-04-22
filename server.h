@@ -41,11 +41,13 @@ public:
 	//static void* getInAddr( struct sockaddr *sa );
 	void initNetwork();
 	void listenClient();
-	bool isInitialized(); 
+	bool isInitialized()const;
+	const int* getSettings()const;
 	inline void clearRecvData(){ memset(m_recvData,0,MAX_DATA_LENGTH*sizeof( char ) ); }
 
 private:
 	void messageParser();
+	void assembleSettings();
 
 private:
 
@@ -70,6 +72,7 @@ private:
 	int m_origY;
 
 	float m_transform[TRANSFORM_MAT_LENGTH];
+	int m_settings[SETTINGS_LENGTH];
 };
 
 #endif

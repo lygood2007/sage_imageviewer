@@ -21,7 +21,6 @@
 #include "types.h"
 
 using std::string;
-#define DEFAULT_FILE_NAME "test_image.jpg"
 
 enum TransformType
 {
@@ -42,7 +41,7 @@ public:
 	~ClientScene();
 	void initTexture();
 	void releaseTexture(); // release the current texture
-	void loadTexture( const string m_fileName ); 
+	void loadTexture( const string fileName ); 
 
 	void draw(const float origX, const float origY, const float width, const float height);
 	void updateTransformMat( TransformType type );
@@ -51,7 +50,7 @@ public:
 
 private:
 
-	void drawQuadTex(const int texID, const float origX, const float origY, const float width, const float height);
+	void drawQuadTex(const GLuint texID, const float origX, const float origY, const float width, const float height);
 
 private:
 	float m_transform[TRANSFORM_MAT_LENGTH];// The transform information: {trans_x,trans_y,rot_angle,scale_x,scale_y}

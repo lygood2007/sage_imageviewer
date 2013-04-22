@@ -30,6 +30,7 @@ Server::Server()
 	m_viewerHeight = -1;
 	memset(m_transform, 0, sizeof(m_transform) );
 	memset( m_clientIP, 0, sizeof(m_clientIP) );
+	assembleSettings();
 	clearRecvData();
 }
 
@@ -46,6 +47,7 @@ Server::Server( char* portNumber )
 	m_viewerHeight = -1;
 	memset(m_transform, 0, sizeof(m_transform) );
 	memset( m_clientIP, 0, sizeof(m_clientIP) );
+	assembleSettings();
 	clearRecvData();
 }
 
@@ -209,10 +211,15 @@ void Server::listenClient()
 	}
 } 
 
-bool Server::isInitialized()
+bool Server::isInitialized()const
 {
 	if( m_dimX > 0 && m_dimY > 0 && m_rank > 0 &&m_viewerWidth > 0 && m_viewerHeight > 0 )
 		return true;
+}
+
+const int* Server::getSettings()const
+{
+	return m_settings;
 }
 
 void Server::messageParser()
@@ -255,6 +262,7 @@ void Server::messageParser()
 				ss<<subStr;
 				ss>>m_rank>>m_dimX>>m_dimY>>m_viewerWidth>>m_viewerHeight>>m_origX>>m_origY;
 				cout<<"I got: "<<m_rank<<" "<<m_dimX<<" "<<m_dimY<<" "<<m_viewerWidth<<" "<<m_viewerHeight<<" "<<m_origX<<" "<<m_origY<<endl;
+				
 			}
 			else if( texts[0] == PACK_TRAN_HEAD )
 			{
@@ -278,4 +286,15 @@ void Server::messageParser()
 			}
 		}
 	}
+}
+
+void Server::assembleSettings()
+{
+	m_settings[0] = m_rank;
+	m_settings[1] = m_dimX;
+	m_settings[2] = m_dimY;
+	m_settings[3] = m_viewerWidth;
+	m_settings[4] = m_viewerHeight;
+	m_settings[5] = m_origX;
+	m_settings[6] = m_origY;
 }

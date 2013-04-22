@@ -36,11 +36,11 @@ void ClientScene::releaseTexture()
 	glDeleteTextures(1,&m_texture[0]);
 }
 
-void ClientScene::loadTexture( string m_fileName )
+void ClientScene::loadTexture( string fileName )
 {
 	releaseTexture();
 
-	getPixels( m_fileName, &m_textureBuffer, m_texWidth, m_texHeight );
+	getPixels( fileName, &m_textureBuffer, m_texWidth, m_texHeight );
 
 	assert( m_textureBuffer != NULL );
 
@@ -136,7 +136,7 @@ void ClientScene::updateTransformMat( TransformType type )
 	}
 }
 
-void ClientScene::drawQuadTex( const int texID, const float origX, const float origY, const float width, const float height)
+void ClientScene::drawQuadTex( const GLuint texID, const float origX, const float origY, const float width, const float height)
 {
 	float half_width = width/2;
 	float half_height = height/2;

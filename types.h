@@ -17,8 +17,11 @@
 using std::vector;
 using std::string;
 typedef unsigned char BYTE;
+
+#define DEFAULT_FILE_NAME "test_image.jpg"
 #define MAX_DATA_LENGTH 1024
 #define TRANSFORM_MAT_LENGTH 5
+#define SETTINGS_LENGTH 7
 /*
   Package header
  */
@@ -52,5 +55,6 @@ struct Config
 	int viewerWidth;
 	int viewerHeight;
 };
+
 
 #endif
