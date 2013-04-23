@@ -7,10 +7,12 @@
  */
 
 #include "server_scene.h"
+#include "server.h"
+#include "image_loader.h"
 
 ServerScene::ServerScene()
 {
-	m_texturebuffer= NULL;
+	m_textureBuffer= NULL;
 	// Point to nothing
 	m_server = NULL;
 }
@@ -18,7 +20,7 @@ ServerScene::ServerScene()
 ServerScene::ServerScene( Server* server )
 {
 	m_server = server;
-	m_texturebuffer = NULL;
+	m_textureBuffer = NULL;
 }
 
 ServerScene::~ServerScene()
@@ -43,7 +45,7 @@ void ServerScene::releaseTexture()
 	glDeleteTextures(1,&m_texture[0]);
 }
 
-void loadTexture( string fileName )
+void ServerScene::loadTexture( const string fileName )
 {
 	// Load the texture
 	releaseTexture();
@@ -59,14 +61,14 @@ void loadTexture( string fileName )
 	glTexParameteri(GL_TEXTURE_RECTANGLE,GL_TEXTURE_WRAP_S,GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_RECTANGLE,GL_TEXTURE_WRAP_S,GL_CLAMP);
 
-	glTexImage2D(GL_TEXTURE_RECTANGLE, 0, 3, m_texWidth, m_texHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_buffer );
+	glTexImage2D(GL_TEXTURE_RECTANGLE, 0, 3, m_texWidth, m_texHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, m_textureBuffer );
 
 }
 
 void ServerScene::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-glMatrixMode(GL_MODELVIEW);
+	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 
 	// If m_server is not NULL, we apply the transformation
@@ -76,7 +78,7 @@ glMatrixMode(GL_MODELVIEW);
 		glScalef(m_server->m_transform[3],m_server->m_transform[4],0);
 		glRotatef(m_server->m_transform[2],0,0,1);
 	}
-	drawQuadTexRect( m_texture[0], m_origX, m_origY, m_texWidth, m_texHeight );
+	drawQuadTexRect( m_texture[0], m_server->m_origX, m_server->m_origY, m_texWidth, m_texHeight );
 	glPopMatrix();
 	glFinish();
 }
@@ -95,11 +97,12 @@ void ServerScene::drawQuadTexRect( const GLuint texID, const float origX, const 
 	glTexCoord2f(0.f,height);
 	glVertex2f(origX-halfWidth, origY-halfHeight );
 	glTexCoord2f(m_texWidth,m_texHeight);
-	glVertex2f(origX-halfWidth, origY-halfHeight);
+	glVertex2f(origX+halfWidth, origY-halfHeight);
 	glTexCoord2f(m_texWidth,0);
-	glVertex2f(origX-halfWidth, origY-halfHeight );
+	glVertex2f(origX+halfWidth, origY+halfHeight );
 	glTexCoord2f(0,0);
 	glVertex2f(origX-halfWidth, origY+halfHeight );
+
 	glEnd();
 
 	glDisable(GL_TEXTURE_RECTANGLE);

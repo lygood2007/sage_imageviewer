@@ -11,7 +11,7 @@
 Client::Client()
 {
 	m_servNum = 0;
-	m_toClose;
+	m_toClose = false;
 	clearSendData();
 }
 
@@ -93,6 +93,12 @@ void Client::encapsulatePack( Packinfo info, float* transform, int* init, int ra
 		sprintf( m_sendData, PACK_INIT_HEAD " %d %d %d %d %d %d %d " PACK_END, rank, init[0], init[1], init[2], init[3], init[4], init[5] );
 		break;
 	}
+	case PACK_SHOW:
+	{
+		// This package is to force the server to update display
+		sprintf(m_sendData,PACK_MESS_HEAD " SHOW " PACK_END );
+		break;
+	}
 	default:
 	{
 		fprintf(stdout, "Invalid call.\n" );
@@ -103,6 +109,9 @@ void Client::encapsulatePack( Packinfo info, float* transform, int* init, int ra
 
 void Client::sendData()
 {
+	if( m_sendData[0] == '\0' )
+		return;
+
 	for( unsigned int i = 0; i < m_servNum; i++ )
 	{
 		send( m_servSocket[i], m_sendData, strlen(m_sendData),0 );

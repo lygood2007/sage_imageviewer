@@ -44,6 +44,8 @@ int dimY;
 
 vector<IP_Pack> nodes;
 
+// One hack, used for triggering the server to display the initial texture
+bool preDisplay = true;
 /**
    Change it to date driven method
  **/
@@ -195,6 +197,12 @@ void init()
 
 void display()
 {
+	if( preDisplay )
+	{
+		client.encapsulatePack( PACK_SHOW );
+		client.sendData();
+		preDisplay = false;
+	}
 	glClear(GL_COLOR_BUFFER_BIT);
 	scene.draw( 0, 0, winWidth, winHeight );
 	glutSwapBuffers();
@@ -216,8 +224,9 @@ void reshape(int w, int h)
 
 void keyhandler( unsigned char key, int x, int y )
 {
-	bool toClose = true;
+	bool toClose = false;
 	float* transMat = scene.getTransformMat();
+	client.clearSendData();
 	switch( key )
 	{
 	case 27:

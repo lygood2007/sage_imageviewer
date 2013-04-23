@@ -33,8 +33,9 @@
 
 class Server
 {
+	friend class ServerScene;
 public:
-	friend ServerScene;
+	
 	Server();
 	Server( char* portNumber );
 	~Server();

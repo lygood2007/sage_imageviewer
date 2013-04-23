@@ -45,7 +45,7 @@ public:
 	void initNetwork();
 	void closeNetwork();
 	inline void clearSendData() { memset(m_sendData, 0, MAX_DATA_LENGTH*sizeof(char)); }
-	inline char* getSendData()const { return m_sendData; }
+	inline const char* getSendData() { return m_sendData; }
 	inline int getServNum()const { return m_servNum; }
 	void encapsulatePack( Packinfo info, float* transform = NULL, int* init = NULL, int rank = -1 );
 	void sendData();

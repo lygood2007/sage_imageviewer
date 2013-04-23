@@ -200,10 +200,10 @@ void reshape(int w, int h)
 void serverListen()
 {
 	//glutPostRedisplay();
-	if( !preDisplay )
+//	if( !preDisplay )
 		server.listenClient();
-	else
-		preDisplay = false;
+//	else
+//		preDisplay = false;
 
 	glutPostRedisplay();
 }

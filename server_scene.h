@@ -46,5 +46,5 @@ private:
 	
 	// In ServerScene, I don't store the transform array because the server takes care of that 
 	// Server is ServerScene's friend so this class can retrieve the private members of Server
-}; 
+};
 #endif

@@ -28,7 +28,12 @@ Server::Server()
 	m_dimY = -1;
 	m_viewerWidth = -1;
 	m_viewerHeight = -1;
-	memset(m_transform, 0, sizeof(m_transform) );
+	//memset(m_transform, 0, sizeof(m_transform) );
+	m_transform[0] = 0;
+	m_transform[1] = 0;
+	m_transform[2] = 0;
+	m_transform[3] = 1;
+	m_transform[4] = 1;
 	memset( m_clientIP, 0, sizeof(m_clientIP) );
 	assembleSettings();
 	clearRecvData();
@@ -45,7 +50,12 @@ Server::Server( char* portNumber )
 	m_dimY = -1;
 	m_viewerWidth = -1;
 	m_viewerHeight = -1;
-	memset(m_transform, 0, sizeof(m_transform) );
+	m_transform[0] = 0;
+	m_transform[1] = 0;
+	m_transform[2] = 0;
+	m_transform[3] = 1;
+	m_transform[4] = 1;
+	//memset(m_transform, 0, sizeof(m_transform) );
 	memset( m_clientIP, 0, sizeof(m_clientIP) );
 	assembleSettings();
 	clearRecvData();
@@ -213,8 +223,14 @@ void Server::listenClient()
 
 bool Server::isInitialized()const
 {
-	if( m_dimX > 0 && m_dimY > 0 && m_rank > 0 &&m_viewerWidth > 0 && m_viewerHeight > 0 )
+	if( m_dimX > 0 && m_dimY > 0 && m_rank >= 0 &&m_viewerWidth > 0 && m_viewerHeight > 0 )
+	{
 		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 const int* Server::getSettings()const
@@ -262,6 +278,7 @@ void Server::messageParser()
 				ss<<subStr;
 				ss>>m_rank>>m_dimX>>m_dimY>>m_viewerWidth>>m_viewerHeight>>m_origX>>m_origY;
 				cout<<"I got: "<<m_rank<<" "<<m_dimX<<" "<<m_dimY<<" "<<m_viewerWidth<<" "<<m_viewerHeight<<" "<<m_origX<<" "<<m_origY<<endl;
+				assembleSettings();
 				
 			}
 			else if( texts[0] == PACK_TRAN_HEAD )
@@ -282,6 +299,11 @@ void Server::messageParser()
 					printf("Server is going to close\n");
 					close(m_listener);
 					exit(0);
+				}
+				else if( subStr == "SHOW" )
+				{
+					//Do nothing here
+					printf("I got show\n");
 				}
 			}
 		}

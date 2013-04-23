@@ -33,6 +33,7 @@ typedef unsigned char BYTE;
 enum Packinfo
 {
 	PACK_CLOSE,
+	PACK_SHOW,
 	PACK_TRANS,
 	PACK_INIT
 };
