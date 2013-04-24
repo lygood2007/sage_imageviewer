@@ -18,16 +18,18 @@ using std::vector;
 using std::string;
 typedef unsigned char BYTE;
 
-#define DEFAULT_FILE_NAME "test_image.jpg"
-#define MAX_DATA_LENGTH 1024
+#define DEFAULT_FILE_NAME "./image/images.txt"
+#define MAX_DATA_LENGTH 64
 #define TRANSFORM_MAT_LENGTH 5
 #define SETTINGS_LENGTH 7
+#define MAX_TEX_NUM 10
 /*
   Package header
  */
 #define PACK_TRAN_HEAD "PACK_TRAN"
 #define PACK_MESS_HEAD "PACK_MESS"
 #define PACK_INIT_HEAD "PACK_INIT_POS"
+#define PACK_TEX_HEAD "PACK_TEX"
 #define PACK_END "END"
 
 enum Packinfo
@@ -35,7 +37,8 @@ enum Packinfo
 	PACK_CLOSE,
 	PACK_SHOW,
 	PACK_TRANS,
-	PACK_INIT
+	PACK_INIT,
+	PACK_TEX,
 };
 
 //#define 

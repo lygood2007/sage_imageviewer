@@ -47,7 +47,7 @@ public:
 	inline void clearSendData() { memset(m_sendData, 0, MAX_DATA_LENGTH*sizeof(char)); }
 	inline const char* getSendData() { return m_sendData; }
 	inline int getServNum()const { return m_servNum; }
-	void encapsulatePack( Packinfo info, float* transform = NULL, int* init = NULL, int rank = -1 );
+	void encapsulatePack( Packinfo info, float* transform = NULL, int* init = NULL, int rank = -1, int index = 0);
 	void sendData();
 	void sendServerInitData( const int dimX, const int dimY, const int serverWidth, const int serverHeight, int origX, int origY );
 

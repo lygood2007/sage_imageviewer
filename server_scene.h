@@ -16,9 +16,10 @@
 #include "GL/freeglut.h"
 #include <stdlib.h>
 #include <string>
+#include <vector>
 #include <assert.h>
 #include "types.h"
-
+using namespace std;
 class Server;
 
 class ServerScene
@@ -29,19 +30,20 @@ public:
 	~ServerScene();
 	void initTexture();
 	void releaseTexture();
-	void loadTexture( const string fileName );
+	void loadTexture( const string fileName, int index );
 	void draw();
 
 private:
 	void drawQuadTexRect( const GLuint texID, const float origX, const float origY, const float width, const float height );
 
 private:
-	BYTE* m_textureBuffer; // Texture buffer
-	GLuint m_texture[1];
+	BYTE* m_textureBuffer[MAX_TEX_NUM]; // Texture buffer
+	GLuint m_texture[MAX_TEX_NUM];
 
 	string m_fileName;
-	int m_texHeight;
-	int m_texWidth;
+	int m_texHeight[MAX_TEX_NUM];
+	int m_texWidth[MAX_TEX_NUM];
+	vector<string> m_textureNames;
 	Server* m_server;
 	
 	// In ServerScene, I don't store the transform array because the server takes care of that 

@@ -1,0 +1,4 @@
+./image/test_image.jpg
+./image/test_image2.jpg
+./image/test_image3.jpg
+./image/test_image4.jpg

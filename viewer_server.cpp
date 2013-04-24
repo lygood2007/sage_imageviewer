@@ -7,6 +7,11 @@
  */
 
 /*
+  Sage includes!
+ */
+#include "libsage.h"
+#include "misc.h"
+/*
   GL includes
  */
 #include "GL/gl.h"
@@ -21,16 +26,12 @@
 #include "server_scene.h"
 #include "types.h"
 #include <iostream>
+#include <sstream>
 using namespace std;
 
-//int rank;
-//int dimX;
-//int dimY;
-//int winHeight;
-//int winWidth;
-
+#define CONFIG_SAGE_FILENAME "configure/config_sage.conf"
 #define TEST_VIEWER
-
+//#define USE_SAGE
 char* port = "9000";
 Server server;
 ServerScene scene(&server);
@@ -50,9 +51,14 @@ int yStep = -1;
 int dx;
 int dy;
 bool preDisplay = true;
-
-
 struct timeval tv_start;
+
+/**
+   Sail object
+ **/
+sail sageInf;
+sailConfig scfg;
+GLubyte *rgbBuffer = 0;
 
 double getTime()
 {
@@ -128,11 +134,62 @@ void initNet()
 			}
 		}
 	}
+	int count = rank*100000;
+	while( count -- > 0)
+	{
+
+	}
 }
 
 void initScene()
 {
 	scene.initTexture();
+}
+
+void initSage()
+{
+	// Initialize sage
+	scfg.init(CONFIG_SAGE_FILENAME);
+	scfg.winX = winOrigX+dx*xStep;
+	scfg.winY = winOrigY+dy*yStep;
+	scfg.resX = winWidth;
+	scfg.resY = winHeight;
+	scfg.winWidth = winWidth;
+	scfg.winHeight = winHeight;
+
+	 sageRect appImageMap;
+	 appImageMap.left   = 0.0;
+	 appImageMap.right  = 1.0;
+	 appImageMap.bottom = 0.0;
+	 appImageMap.top    = 1.0;
+	 sagePixFmt pixelfmt = PIXFMT_888;
+	 int roworder = BOTTOM_TO_TOP;
+	 int frate = 60;
+
+	scfg.pixFmt = pixelfmt;
+	scfg.rowOrd = roworder;
+	scfg.master = true;
+	scfg.rendering = true;
+	string myIP = "127.0.0.1";
+	string myPort = port;
+	string name = myIP + myPort;
+	scfg.setAppName((char*)name.c_str());
+
+
+	/*scfg.setAppName("imageviewer");
+	scfg.appID = rank;
+	//int resX = 200;
+	//int resY = 200;
+	//scfg.resX = resX;
+	//scfg.resY = resY;
+	scfg.winX = winOrigX;
+	scfg.winY = winOrigY;
+	scfg.winWidth = winWidth;
+	scfg.winHeight = winHeight;
+	scfg.pixFmt = PIXFMT_888;
+	scfg.rowOrd = BOTTOM_TO_TOP;
+	*/
+	sageInf.init(scfg);
 }
 
 void init()
@@ -151,6 +208,7 @@ void init()
 
 void display()
 {
+//	glutHideWindow();
 	glViewport(0,0, (GLsizei)winWidth, (GLsizei)winHeight);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -160,22 +218,30 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 
 	scene.draw();
-	/*
-	  Viewport update
-	 */
-//	glClear(GL_COLOR_BUFFER_BIT);
-	//scene.draw();
-	
+
+#ifdef USE_SAGE
 	// Sage part
 	if( winWidth > 0 )
 	{
-/*
-		GLubyte *rgbBuffer = nextBuffer(sageInf);
-		glReadPixels(0,0,winWidth, winHeight, GL_RGB, GL_UNSIGNED_BYTE,
-					 rgbBuffer );
-		swapBuffer(sageInf);
-*/
+		glReadPixels(0, 0, winWidth, winHeight, GL_RGB, GL_UNSIGNED_BYTE, rgbBuffer);
+		sageInf.swapBuffer();
+		rgbBuffer = (GLubyte*) sageInf.getBuffer();
+
+		sageMessage msg;
+		
+		
+		if (sageInf.checkMsg(msg, false) > 0) {
+			switch (msg.getCode()) {
+			case APP_QUIT : {
+				sageInf.shutdown();
+				exit(0);
+				break;
+			}
+			}	
+			}
+		
 	}
+#endif
 	glutSwapBuffers();
 }
 
@@ -183,29 +249,13 @@ void display()
 void reshape(int w, int h)
 {
 	glutReshapeWindow(winWidth,winHeight);
-/*
-	glViewport(0,0, (GLsizei)w, (GLsizei)h);
-	winWidth = w;
-	winHeight = h;
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-
-	gluOrtho2D(-viewerWidth/2.0+winOrigX,viewerWidth/2.0+winOrigX+winWidth,viewerHeight/2.0-winOrigY-winHeight,viewerHeight/2.0-winOrigY);
-	gluOrtho2D(-w/2,w/2,-h/2,h/2);
-	glMatrixMode(GL_MODELVIEW);
-	glutPostRedisplay();*/
 }
 
 void serverListen()
 {
-	//glutPostRedisplay();
-	if( !preDisplay )
-		server.listenClient();
-	else
-		preDisplay = false;
-
 	glutPostRedisplay();
+    server.listenClient();
+//	glutPostRedisplay();
 }
 
 int main( int argc, char** argv )
@@ -215,6 +265,10 @@ int main( int argc, char** argv )
 		port = argv[1];
 	}
 	initNet();
+#ifdef USE_SAGE
+	initSage();
+#endif
+	gettimeofday(&tv_start,0);
 	glutInit( &argc, argv );
 	// Use double buffer
 	glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB );
@@ -228,6 +282,12 @@ int main( int argc, char** argv )
 	glutIdleFunc(serverListen);
 	initScene();
 	init();
+	//glPixelStorei(GL_PACK_ALIGNMENT,1);
+#ifdef USE_SAGE
+	if (rgbBuffer)
+	    delete [] rgbBuffer;
+	rgbBuffer = (GLubyte *)sageInf.getBuffer();
+#endif
 	glutMainLoop();
 	return 0;
 }

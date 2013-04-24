@@ -8,10 +8,16 @@
 
 #include "client_scene.h"
 #include "image_loader.h"
-
+#include <fstream>
+using namespace std;
 ClientScene::ClientScene()
 {
-	m_textureBuffer = NULL;
+	//m_textureBuffer = NULL;
+	for( int i = 0; i < MAX_TEX_NUM; i++ )
+	{
+		m_textureBuffer[i] = NULL;
+	}
+	curTex = 0;
 	resetTransformMat();
 }
 
@@ -22,30 +28,52 @@ ClientScene::~ClientScene()
 
 void ClientScene::initTexture()
 {
+	// firstly load the image names
 	// Load the default image when initializing
-	loadTexture( DEFAULT_FILE_NAME );
+	ifstream inFile;
+	inFile.open(DEFAULT_FILE_NAME);
+	if( !inFile.is_open() )
+	{
+		printf("Cannot find the txt of image names\n.");
+		exit(1);
+	}
+	while( !inFile.eof() )
+	{
+		string tmp;
+		inFile>>tmp;
+		m_textureNames.push_back(tmp);
+	}
+	m_textureNames.pop_back();
+	inFile.close();
+	for( int i = 0; i < m_textureNames.size(); i++ )
+	{
+		loadTexture( m_textureNames[i],i );
+	}
 }
 
 void ClientScene::releaseTexture()
 {
-	if( m_textureBuffer )
-	{
-		free(m_textureBuffer);
-		m_textureBuffer = NULL;
+	for( int i = 0; i < MAX_TEX_NUM; i++ )
+	{ 
+		if( m_textureBuffer[i] )
+		{
+			free(m_textureBuffer[i]);
+			m_textureBuffer[i] = NULL;
+		}
+		glDeleteTextures(1,&m_texture[i]);
 	}
-	glDeleteTextures(1,&m_texture[0]);
 }
 
-void ClientScene::loadTexture( string fileName )
+void ClientScene::loadTexture( const string fileName,int index )
 {
-	releaseTexture();
+	//releaseTexture();
 
-	getPixels( fileName, &m_textureBuffer, m_texWidth, m_texHeight );
+	getPixels( fileName, &m_textureBuffer[index], m_texWidth[index], m_texHeight[index] );
 
-	assert( m_textureBuffer != NULL );
+	assert( m_textureBuffer[index] != NULL );
 
-	glGenTextures(1,&m_texture[0]);
-	glBindTexture(GL_TEXTURE_2D,m_texture[0]);
+	glGenTextures(1,&m_texture[index]);
+	glBindTexture(GL_TEXTURE_2D,m_texture[index]);
 
 	// We use mipmap here because it's a small viewport
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
@@ -53,7 +81,7 @@ void ClientScene::loadTexture( string fileName )
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
 
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, m_texWidth, m_texHeight, GL_RGB, GL_UNSIGNED_BYTE, m_textureBuffer );
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, m_texWidth[index], m_texHeight[index], GL_RGB, GL_UNSIGNED_BYTE, m_textureBuffer[index] );
 }
 
 void ClientScene::draw( const float origX, const float origY, const float width, const float height )
@@ -63,7 +91,7 @@ void ClientScene::draw( const float origX, const float origY, const float width,
 	glTranslatef(m_transform[0],m_transform[1],0);
 	glScalef(m_transform[3],m_transform[4],0);
 	glRotatef(m_transform[2],0,0,1);
-	drawQuadTex(m_texture[0],origX,origY,m_texWidth/4,m_texHeight/4);
+	drawQuadTex(m_texture[curTex],origX,origY,m_texWidth[curTex]/4,m_texHeight[curTex]/4);
 	glPopMatrix();
 	// In double buffer mode
 }

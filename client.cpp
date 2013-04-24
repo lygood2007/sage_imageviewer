@@ -7,6 +7,7 @@
  */
 #include "client.h"
 #include "funcs.h"
+#include "unistd.h"
 
 Client::Client()
 {
@@ -61,7 +62,7 @@ void Client::closeNetwork()
 	}
 }
 
-void Client::encapsulatePack( Packinfo info, float* transform, int* init, int rank )
+void Client::encapsulatePack( Packinfo info, float* transform, int* init, int rank, int index )
 {
 	clearSendData();
 	switch (info)
@@ -99,6 +100,16 @@ void Client::encapsulatePack( Packinfo info, float* transform, int* init, int ra
 		sprintf(m_sendData,PACK_MESS_HEAD " SHOW " PACK_END );
 		break;
 	}
+	case PACK_TEX:
+	{
+		if( index < 0 )
+		{
+			printf("Invalid call.\n");
+			exit(1);
+		}
+		sprintf(m_sendData, PACK_TEX_HEAD " %d " PACK_END, index );
+		break;
+	}
 	default:
 	{
 		fprintf(stdout, "Invalid call.\n" );
@@ -114,7 +125,10 @@ void Client::sendData()
 
 	for( unsigned int i = 0; i < m_servNum; i++ )
 	{
+		//int count = 100;
+		//while(  count-- > 0 );
 		send( m_servSocket[i], m_sendData, strlen(m_sendData),0 );
+		usleep(1000);
 	}
 	if( m_toClose )
 	{

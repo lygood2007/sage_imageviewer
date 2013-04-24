@@ -74,6 +74,7 @@ private:
 
 	float m_transform[TRANSFORM_MAT_LENGTH];
 	int m_settings[SETTINGS_LENGTH];
+	int m_curTexIndex;
 };
 
 #endif

@@ -34,6 +34,7 @@ Server::Server()
 	m_transform[2] = 0;
 	m_transform[3] = 1;
 	m_transform[4] = 1;
+	m_curTexIndex = 0;
 	memset( m_clientIP, 0, sizeof(m_clientIP) );
 	assembleSettings();
 	clearRecvData();
@@ -55,6 +56,7 @@ Server::Server( char* portNumber )
 	m_transform[2] = 0;
 	m_transform[3] = 1;
 	m_transform[4] = 1;
+	m_curTexIndex = 0;
 	//memset(m_transform, 0, sizeof(m_transform) );
 	memset( m_clientIP, 0, sizeof(m_clientIP) );
 	assembleSettings();
@@ -297,7 +299,7 @@ void Server::messageParser()
 				if( subStr == "CLOSE" )
 				{
 					printf("Server is going to close\n");
-					close(m_listener);
+					//close(m_listener);
 					exit(0);
 				}
 				else if( subStr == "SHOW" )
@@ -305,6 +307,14 @@ void Server::messageParser()
 					//Do nothing here
 					printf("I got show\n");
 				}
+			}
+			else if( texts[0] == PACK_TEX_HEAD )
+			{
+				len = mSize - strlen(PACK_TEX_HEAD) - strlen(PACK_END);
+				subStr = message.substr(strlen(PACK_TEX_HEAD),len);
+				ss<<subStr;
+				ss>>m_curTexIndex;
+				cout<<"I got:"<<"Index"<<m_curTexIndex<<endl;;
 			}
 		}
 	}

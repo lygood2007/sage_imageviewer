@@ -313,6 +313,30 @@ void keyhandler( unsigned char key, int x, int y )
 		client.encapsulatePack( PACK_TRANS, transMat );
 		break;
 	}
+	case '1':
+	{
+		scene.changeTex(0);
+		client.encapsulatePack( PACK_TEX, NULL, NULL, -1, scene.getTexIndex());
+		break;
+	}
+	case '2':
+	{
+		scene.changeTex(1);
+		client.encapsulatePack( PACK_TEX, NULL, NULL, -1, scene.getTexIndex());
+		break;
+	}
+	case '3':
+	{
+		scene.changeTex(2);
+		client.encapsulatePack( PACK_TEX, NULL, NULL, -1, scene.getTexIndex());
+		break;
+	}
+	case '4':
+	{
+		scene.changeTex(3);
+		client.encapsulatePack( PACK_TEX, NULL, NULL, -1, scene.getTexIndex());
+		break;
+	}
 	default:
 	{
 		break;

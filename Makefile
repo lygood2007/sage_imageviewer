@@ -8,8 +8,7 @@ GLEW_LIB= -lGLEW
 CFLAGS = -D_REENTRANT $(DEBUGFLAGS) -D_XOPEN_SOURCE=500 -D_GNU_SOURCE
 CFLAGS += -I./include -I./common -I./network 
 CFLAGS += `Wand-config --cflags --cppflags` -fno-stack-protector
-LIBS = -lpthread -lGL -lGLU -lglut -lm -lMagickWand -lMagickCore $(QUANTA_LDFLAGS) $(GLEW_LIB)
-# -L../../lib -lsail
+LIBS = -lpthread -lGL -lGLU -lglut -lm -lMagickWand -lMagickCore $(QUANTA_LDFLAGS) $(GLEW_LIB) -lsail
 
 #all: server#client server
 #all: client server
